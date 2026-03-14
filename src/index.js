@@ -45,7 +45,7 @@ document.addEventListener('DOMContentLoaded', () => {
   const otpInputs = document.querySelectorAll(".otp-input");
 
   // Check OTP server
-  fetch(`${process.env.OTP_BASE_URL}/`).then(res => {
+  fetch(`${import.meta.env.VITE_OTP_BASE_URL}/`).then(res => {
     otpServerEnabled = res.status === 204;
     otpMsg.style.display = 'none';
   });
@@ -222,7 +222,7 @@ document.addEventListener('DOMContentLoaded', () => {
   otpSubmit.onclick = () => {
     if (otpSubmit.disabled) return;
     const otp = Array.from(otpInputs).map(e => e.value).toString().replaceAll(',', '');
-    fetch(`${process.env.OTP_BASE_URL}/get?otp=${otp}`).then(async (res) => {
+    fetch(`${import.meta.env.VITE_OTP_BASE_URL}/get?otp=${otp}`).then(async (res) => {
       if (res.status !== 200) {
         otpMsg.style.display = 'block';
         otpMsg.textContent = 'Password not found.';
