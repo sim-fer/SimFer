@@ -225,6 +225,9 @@ document.addEventListener('DOMContentLoaded', () => {
       if (e.key === "Backspace" && !e.target.value && index > 0) {
         otpInputs[index - 1].focus();
       }
+      if (e.key === "Enter" && !otpSubmit.disabled) {
+        otpSubmit.click();
+      }
     });
   });
 
