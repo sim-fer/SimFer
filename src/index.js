@@ -33,12 +33,11 @@ document.addEventListener('DOMContentLoaded', () => {
   const fileNameDisplay = document.getElementById('fileName');
   const uploadButton = document.getElementById('uploadButton');
   const cancelButton = document.getElementById('cancelButton');
-  const uploadInfo = document.getElementById('uploadInfo');
+  const transferInfo = document.getElementById('transferInfo');
   const infoHash = document.getElementById('infoHash');
   const otpViewer = document.getElementById('otpViewer');
   const createOTP = document.getElementById('createOTP');
   const copyURL = document.getElementById('copyURL');
-  const downloadInfo = document.getElementById('downloadInfo');
   const downloadStatus = document.getElementById('downloadStatus');
   const downloadAll = document.getElementById('downloadAll');
   const downloadItems = document.getElementById('downloadItems');
@@ -56,8 +55,7 @@ document.addEventListener('DOMContentLoaded', () => {
     uploadArea.style.display = name === 'upload-area' ? 'block' : 'none';
     otpArea.style.display = name === 'upload-area' ? 'block' : 'none';
     fileInfo.style.display = name === 'file-info' ? 'block' : 'none';
-    uploadInfo.style.display = name === 'upload-info' ? 'block' : 'none';
-    downloadInfo.style.display = name === 'download-info' ? 'block' : 'none';
+    transferInfo.style.display = (name === 'upload-info' || name === 'download-info') ? 'block' : 'none';
   }
 
   const params = new URLSearchParams(window.location.search);
@@ -66,12 +64,15 @@ document.addEventListener('DOMContentLoaded', () => {
     client.add(getMagnetLink(params.get('h')), onTorrentAdd);
   }
 
-  function onTorrentSeed(torrent) {
+  function showShareInfo(torrent) {
     uploadedInfoHash = torrent.infoHash;
     const shareUrl = `https://${window.location.host}?h=${uploadedInfoHash}`
     infoHash.textContent = shareUrl;
     copyURL.onclick = () => {
-      navigator.clipboard.writeText(shareUrl).then(() => copyURL.textContent = 'Copied');
+      navigator.clipboard.writeText(shareUrl).then(() => {
+        copyURL.textContent = 'Copied';
+        setTimeout(() => copyURL.textContent = 'Copy URL', 2000);
+      });
     }
     QRCode.toString(shareUrl, { type: 'svg' }, (err, svg) => {
       if (err) {
@@ -82,14 +83,19 @@ document.addEventListener('DOMContentLoaded', () => {
       const url = URL.createObjectURL(blob);
       qrcodeArea.setAttribute('src', url);
     });
+  }
+
+  function onTorrentSeed(torrent) {
+    showShareInfo(torrent);
     displayElem('upload-info');
   }
 
   function onTorrentAdd(torrent) {
+    showShareInfo(torrent);
     downloadStatus.textContent = `Downloads: ${(torrent.progress * 100).toFixed(1)}%`;
     displayElem('download-info');
     torrent.on('download', (bytes) => {
-      if (torrent.progress == 1) downloadStatus.textContent = 'Done (File sharing enabled)';
+      if (torrent.progress == 1) downloadStatus.textContent = '▼ Click to download';
       downloadStatus.textContent = `Downloads: ${(torrent.progress * 100).toFixed(1)}%`;
       // console.log('just downloaded: ' + bytes);
       // console.log('total downloaded: ' + torrent.downloaded);
@@ -98,7 +104,7 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     torrent.on('done', async () => {
-      downloadStatus.textContent = 'Done (File sharing enabled)';
+      downloadStatus.textContent = '▼ Click to download';
       downloadItems.style.display = 'block';
       if (torrent.files.length > 1) {
         downloadAll.style.display = 'block';

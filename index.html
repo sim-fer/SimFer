@@ -34,7 +34,7 @@
         gtag('config', 'G-JN876CFKT6');
     </script>
     <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-6801525820868787"
-    crossorigin="anonymous"></script>
+        crossorigin="anonymous"></script>
     <script type="module" src="/src/index.js"></script>
 </head>
 
@@ -73,20 +73,17 @@
                     <button id="uploadButton">Share</button>
                     <button id="cancelButton">Cancel</button>
                 </div>
-                <div class="info" id="uploadInfo" style="display: none;">
-                    <h2>Share Link</h2>
+                <div class="info" id="transferInfo" style="display: none;">
+                    <p id="downloadStatus"></p>
+                    <button id="downloadAll" style="display: none;">DOWNLOAD ALL</button>
+                    <div id="downloadItems" style="display: none;"></div>
                     <p style="font-weight: bold; color: tomato;">Closing the tab will stop the file sharing!</p>
+                    <h2>Share Link</h2>
                     <p id="infoHash" style="text-decoration: underline;"></p>
                     <img id="qrcodeArea" style="margin: 8px; font-weight: bold;" />
                     <h1 id="otpViewer" style="letter-spacing: 4px;"></h1>
                     <button id="copyURL">Copy URL</button>
                     <button id="createOTP">Create OTP</button>
-                </div>
-                <div class="info" id="downloadInfo" style="display: none;">
-                    <p id="downloadStatus"></p>
-                    <p style="font-weight: bold; color: tomato;">Closing the tab will stop the file sharing!</p>
-                    <button id="downloadAll" style="display: none;">DOWNLOAD ALL</button>
-                    <div id="downloadItems" style="display: none;"></div>
                 </div>
             </div>
         </section>
