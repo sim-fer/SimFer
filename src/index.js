@@ -1,4 +1,5 @@
 import WebTorrent from "webtorrent/dist/webtorrent.min.js";
+import QRCode from "qrcode";
 
 let uploadedFiles, uploadedInfoHash, otpServerEnabled = false;
 const client = new WebTorrent();
@@ -72,7 +73,15 @@ document.addEventListener('DOMContentLoaded', () => {
     copyURL.onclick = () => {
       navigator.clipboard.writeText(shareUrl).then(() => copyURL.textContent = 'Copied');
     }
-    qrcodeArea.setAttribute('src', `https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=${shareUrl}`);
+    QRCode.toString(shareUrl, { type: 'svg' }, (err, svg) => {
+      if (err) {
+        console.error(err);
+        return;
+      }
+      const blob = new Blob([svg], { type: 'image/svg+xml' });
+      const url = URL.createObjectURL(blob);
+      qrcodeArea.setAttribute('src', url);
+    });
     displayElem('upload-info');
   }
 
@@ -239,7 +248,7 @@ document.addEventListener('DOMContentLoaded', () => {
     if (createOTP.classList.contains('disabled')) return;
     createOTP.textContent = 'Loading...';
 
-    fetch(`${process.env.OTP_BASE_URL}/create`, {
+    fetch(`${import.meta.env.VITE_OTP_BASE_URL}/create`, {
       mode: 'cors',
       headers: { "Content-Type": "application/json" },
       method: "POST",
@@ -260,7 +269,7 @@ document.addEventListener('DOMContentLoaded', () => {
           createOTP.textContent = 'Create OTP';
           otpViewer.style.display = 'none';
 
-          fetch(`${process.env.OTP_BASE_URL}/delete?otp=${otp}`).then(res => res.text().then(msg => console.log(msg)));
+          fetch(`${import.meta.env.VITE_OTP_BASE_URL}/delete?otp=${otp}`).then(res => res.text().then(msg => console.log(msg)));
           return;
         }
         createOTP.textContent = `${Math.round((endTime - now) / 1000)}s`;
